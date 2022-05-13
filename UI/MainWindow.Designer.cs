@@ -44,8 +44,14 @@
             this.TabControlMainWindow = new System.Windows.Forms.TabControl();
             this.TabPageEncrypt = new System.Windows.Forms.TabPage();
             this.EncryptFileList = new System.Windows.Forms.DataGridView();
+            this.EncryptFilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EncryptOperation = new System.Windows.Forms.DataGridViewLinkColumn();
+            this.EncryptState = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TabPageDecrypt = new System.Windows.Forms.TabPage();
             this.DecryptFileList = new System.Windows.Forms.DataGridView();
+            this.DecryptFileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DecryptOpeation = new System.Windows.Forms.DataGridViewLinkColumn();
+            this.DecryptState = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ButtonAddDocument = new System.Windows.Forms.Button();
             this.ButtonAddFolder = new System.Windows.Forms.Button();
             this.ButtonClearList = new System.Windows.Forms.Button();
@@ -53,12 +59,6 @@
             this.WhetherDelete = new System.Windows.Forms.CheckBox();
             this.LabelPassword = new System.Windows.Forms.Label();
             this.TextBoxPassword = new System.Windows.Forms.TextBox();
-            this.EncryptFilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EncryptOperation = new System.Windows.Forms.DataGridViewLinkColumn();
-            this.EncryptState = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DecryptFileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DecryptOpeation = new System.Windows.Forms.DataGridViewLinkColumn();
-            this.DecryptState = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PanelTitle.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxWindowIcon)).BeginInit();
             this.PanelBottom.SuspendLayout();
@@ -233,10 +233,10 @@
             // 
             this.TabControlMainWindow.Controls.Add(this.TabPageEncrypt);
             this.TabControlMainWindow.Controls.Add(this.TabPageDecrypt);
-            this.TabControlMainWindow.Location = new System.Drawing.Point(0, 100);
+            this.TabControlMainWindow.Location = new System.Drawing.Point(0, 75);
             this.TabControlMainWindow.Name = "TabControlMainWindow";
             this.TabControlMainWindow.SelectedIndex = 0;
-            this.TabControlMainWindow.Size = new System.Drawing.Size(800, 300);
+            this.TabControlMainWindow.Size = new System.Drawing.Size(800, 320);
             this.TabControlMainWindow.TabIndex = 0;
             this.TabControlMainWindow.TabStop = false;
             // 
@@ -246,7 +246,7 @@
             this.TabPageEncrypt.Location = new System.Drawing.Point(4, 26);
             this.TabPageEncrypt.Name = "TabPageEncrypt";
             this.TabPageEncrypt.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageEncrypt.Size = new System.Drawing.Size(792, 270);
+            this.TabPageEncrypt.Size = new System.Drawing.Size(792, 290);
             this.TabPageEncrypt.TabIndex = 0;
             this.TabPageEncrypt.Text = "Encrypt";
             this.TabPageEncrypt.UseVisualStyleBackColor = true;
@@ -267,9 +267,37 @@
             this.EncryptFileList.Name = "EncryptFileList";
             this.EncryptFileList.RowHeadersVisible = false;
             this.EncryptFileList.RowTemplate.Height = 25;
-            this.EncryptFileList.Size = new System.Drawing.Size(792, 270);
+            this.EncryptFileList.Size = new System.Drawing.Size(792, 290);
             this.EncryptFileList.TabIndex = 0;
             this.EncryptFileList.TabStop = false;
+            // 
+            // EncryptFilePath
+            // 
+            this.EncryptFilePath.HeaderText = "文件（路径）";
+            this.EncryptFilePath.Name = "EncryptFilePath";
+            this.EncryptFilePath.ReadOnly = true;
+            this.EncryptFilePath.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.EncryptFilePath.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.EncryptFilePath.Width = 600;
+            // 
+            // EncryptOperation
+            // 
+            this.EncryptOperation.HeaderText = "操作";
+            this.EncryptOperation.Name = "EncryptOperation";
+            this.EncryptOperation.ReadOnly = true;
+            this.EncryptOperation.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.EncryptOperation.Text = "删除文件";
+            this.EncryptOperation.UseColumnTextForLinkValue = true;
+            this.EncryptOperation.Width = 90;
+            // 
+            // EncryptState
+            // 
+            this.EncryptState.HeaderText = "状态";
+            this.EncryptState.Name = "EncryptState";
+            this.EncryptState.ReadOnly = true;
+            this.EncryptState.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.EncryptState.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.EncryptState.Width = 80;
             // 
             // TabPageDecrypt
             // 
@@ -277,7 +305,7 @@
             this.TabPageDecrypt.Location = new System.Drawing.Point(4, 26);
             this.TabPageDecrypt.Name = "TabPageDecrypt";
             this.TabPageDecrypt.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageDecrypt.Size = new System.Drawing.Size(792, 270);
+            this.TabPageDecrypt.Size = new System.Drawing.Size(792, 290);
             this.TabPageDecrypt.TabIndex = 1;
             this.TabPageDecrypt.Text = "Decrypt";
             this.TabPageDecrypt.UseVisualStyleBackColor = true;
@@ -296,9 +324,37 @@
             this.DecryptFileList.Name = "DecryptFileList";
             this.DecryptFileList.RowHeadersVisible = false;
             this.DecryptFileList.RowTemplate.Height = 25;
-            this.DecryptFileList.Size = new System.Drawing.Size(792, 270);
+            this.DecryptFileList.Size = new System.Drawing.Size(792, 290);
             this.DecryptFileList.TabIndex = 0;
             this.DecryptFileList.TabStop = false;
+            // 
+            // DecryptFileName
+            // 
+            this.DecryptFileName.HeaderText = "文件（路径）";
+            this.DecryptFileName.Name = "DecryptFileName";
+            this.DecryptFileName.ReadOnly = true;
+            this.DecryptFileName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.DecryptFileName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DecryptFileName.Width = 600;
+            // 
+            // DecryptOpeation
+            // 
+            this.DecryptOpeation.HeaderText = "操作";
+            this.DecryptOpeation.Name = "DecryptOpeation";
+            this.DecryptOpeation.ReadOnly = true;
+            this.DecryptOpeation.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.DecryptOpeation.Text = "删除文件";
+            this.DecryptOpeation.UseColumnTextForLinkValue = true;
+            this.DecryptOpeation.Width = 90;
+            // 
+            // DecryptState
+            // 
+            this.DecryptState.HeaderText = "状态";
+            this.DecryptState.Name = "DecryptState";
+            this.DecryptState.ReadOnly = true;
+            this.DecryptState.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.DecryptState.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DecryptState.Width = 80;
             // 
             // ButtonAddDocument
             // 
@@ -352,7 +408,7 @@
             this.WhetherDelete.Size = new System.Drawing.Size(147, 21);
             this.WhetherDelete.TabIndex = 0;
             this.WhetherDelete.TabStop = false;
-            this.WhetherDelete.Text = "加密完成后删除源文件";
+            this.WhetherDelete.Text = "操作完成后删除源文件";
             this.WhetherDelete.UseVisualStyleBackColor = true;
             // 
             // LabelPassword
@@ -374,62 +430,6 @@
             this.TextBoxPassword.TabIndex = 0;
             this.TextBoxPassword.TabStop = false;
             this.TextBoxPassword.UseSystemPasswordChar = true;
-            // 
-            // EncryptFilePath
-            // 
-            this.EncryptFilePath.HeaderText = "文件（路径）";
-            this.EncryptFilePath.Name = "EncryptFilePath";
-            this.EncryptFilePath.ReadOnly = true;
-            this.EncryptFilePath.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.EncryptFilePath.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.EncryptFilePath.Width = 600;
-            // 
-            // EncryptOperation
-            // 
-            this.EncryptOperation.HeaderText = "操作";
-            this.EncryptOperation.Name = "EncryptOperation";
-            this.EncryptOperation.ReadOnly = true;
-            this.EncryptOperation.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.EncryptOperation.Text = "删除文件";
-            this.EncryptOperation.UseColumnTextForLinkValue = true;
-            this.EncryptOperation.Width = 90;
-            // 
-            // EncryptState
-            // 
-            this.EncryptState.HeaderText = "状态";
-            this.EncryptState.Name = "EncryptState";
-            this.EncryptState.ReadOnly = true;
-            this.EncryptState.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.EncryptState.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.EncryptState.Width = 80;
-            // 
-            // DecryptFileName
-            // 
-            this.DecryptFileName.HeaderText = "文件（路径）";
-            this.DecryptFileName.Name = "DecryptFileName";
-            this.DecryptFileName.ReadOnly = true;
-            this.DecryptFileName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.DecryptFileName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DecryptFileName.Width = 600;
-            // 
-            // DecryptOpeation
-            // 
-            this.DecryptOpeation.HeaderText = "操作";
-            this.DecryptOpeation.Name = "DecryptOpeation";
-            this.DecryptOpeation.ReadOnly = true;
-            this.DecryptOpeation.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.DecryptOpeation.Text = "删除文件";
-            this.DecryptOpeation.UseColumnTextForLinkValue = true;
-            this.DecryptOpeation.Width = 90;
-            // 
-            // DecryptState
-            // 
-            this.DecryptState.HeaderText = "状态";
-            this.DecryptState.Name = "DecryptState";
-            this.DecryptState.ReadOnly = true;
-            this.DecryptState.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.DecryptState.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DecryptState.Width = 80;
             // 
             // MainWindow
             // 

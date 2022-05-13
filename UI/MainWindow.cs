@@ -18,7 +18,7 @@ namespace UI
         /// <param name="e"></param>
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            ButtonTabEncrypt.ForeColor = Color.White;
+            ButtonTabEncrypt_Click(sender, e);
         }
 
         /// <summary>
@@ -81,6 +81,8 @@ namespace UI
             ButtonTabEncrypt.ForeColor = Color.White;
             ButtonTabDecrypt.ForeColor = Color.DeepSkyBlue;
             TabControlMainWindow.SelectTab(0);
+            WhetherDelete.Text = "加密完成后删除源文件";
+            ButtonRun.Text = "开始加密";
         }
 
         /// <summary>
@@ -93,6 +95,8 @@ namespace UI
             ButtonTabEncrypt.ForeColor = Color.DeepSkyBlue;
             ButtonTabDecrypt.ForeColor = Color.White;
             TabControlMainWindow.SelectTab(1);
+            WhetherDelete.Text = "解密完成后删除源文件";
+            ButtonRun.Text = "开始解密";
         }
 
         /// <summary>
