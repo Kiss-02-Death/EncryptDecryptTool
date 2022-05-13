@@ -18,7 +18,7 @@ namespace UI
         /// <param name="e"></param>
         private void MainWindow_Load(object sender, EventArgs e)
         {
-
+            ButtonTabEncrypt.ForeColor = Color.White;
         }
 
         /// <summary>
@@ -80,6 +80,7 @@ namespace UI
         {
             ButtonTabEncrypt.ForeColor = Color.White;
             ButtonTabDecrypt.ForeColor = Color.DeepSkyBlue;
+            TabControlMainWindow.SelectTab(0);
         }
 
         /// <summary>
@@ -91,6 +92,27 @@ namespace UI
         {
             ButtonTabEncrypt.ForeColor = Color.DeepSkyBlue;
             ButtonTabDecrypt.ForeColor = Color.White;
+            TabControlMainWindow.SelectTab(1);
+        }
+
+        private void ButtonAddDocument_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonAddFolder_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonClearList_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ButtonRun_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
