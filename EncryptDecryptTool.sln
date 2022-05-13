@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Encrypt", "Encrypt\Encrypt.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Decrypt", "Decrypt\Decrypt.csproj", "{53F132E7-B527-4A91-AAC4-90BF7708E264}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "UI\UI.csproj", "{F508B0F1-DBEB-461B-8275-CAF996E303C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{1F1074BB-822D-4C14-AD56-A13927923C2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{53F132E7-B527-4A91-AAC4-90BF7708E264}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53F132E7-B527-4A91-AAC4-90BF7708E264}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53F132E7-B527-4A91-AAC4-90BF7708E264}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F508B0F1-DBEB-461B-8275-CAF996E303C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F508B0F1-DBEB-461B-8275-CAF996E303C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F508B0F1-DBEB-461B-8275-CAF996E303C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F508B0F1-DBEB-461B-8275-CAF996E303C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F1074BB-822D-4C14-AD56-A13927923C2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F1074BB-822D-4C14-AD56-A13927923C2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F1074BB-822D-4C14-AD56-A13927923C2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F1074BB-822D-4C14-AD56-A13927923C2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
