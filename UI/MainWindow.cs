@@ -1,3 +1,6 @@
+using Encrypt;
+using Decrypt;
+
 namespace UI
 {
     public partial class MainWindow : Form
@@ -106,12 +109,26 @@ namespace UI
         /// <param name="e"></param>
         private void ButtonAddDocument_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog()
+            OpenFileDialog openFileDialog;
+            if (TabControlMainWindow.SelectedIndex == 0)
             {
-                Title = "添加文件",
-                Filter = "所有文件|*.*",
-                Multiselect = true
-            };
+                openFileDialog = new OpenFileDialog()
+                {
+                    Title = "添加文件",
+                    Filter = "所有文件|*.*",
+                    Multiselect = true
+                };
+            }
+            else
+            {
+                openFileDialog = new OpenFileDialog()
+                {
+                    Title = "添加文件",
+                    Filter = "encrypt文件|*.encrypt",
+                    Multiselect = true
+                };
+            }
+
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 List<string> fileNames = new List<string>();
@@ -197,7 +214,84 @@ namespace UI
         /// <param name="e"></param>
         private void ButtonRun_Click(object sender, EventArgs e)
         {
+            ButtonAddDocument.Enabled = false;
+            ButtonAddFolder.Enabled = false;
+            ButtonClearList.Enabled = false;
+            TextBoxPassword.Enabled = false;
+            WhetherDelete.Enabled = false;
 
+            if (TabControlMainWindow.SelectedIndex == 0)
+            {
+                if (MessageBox.Show("确定要开始加密文件吗？", "开始加密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                {
+                    FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+                    {
+                        Description = "请选择导出位置",
+                        ShowNewFolderButton = true
+                    };
+                    if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    for (int i = 0; i < EncryptFileList.Rows.Count; i++)
+                    {
+                        string inputFile = EncryptFileList.Rows[i].Cells[0].Value.ToString();
+                        string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileName(inputFile) + ".encrypt";
+
+                        EncryptFileList.Rows[i].Cells[3].Value = "加密中...";
+                        if (EncryptFile(inputFile, outputFile))
+                        {
+                            EncryptFileList.Rows[i].Cells[3].Value = "加密完成";
+                        }
+                        else
+                        {
+                            EncryptFileList.Rows[i].Cells[3].Value = "加密失败";
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                if (MessageBox.Show("确定要开始解密文件吗？", "开始解密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                {
+
+                    FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+                    {
+                        Description = "请选择导出位置",
+                        ShowNewFolderButton = true
+                    };
+                    if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    for (int i = 0; i < DecryptFileList.Rows.Count; i++)
+                    {
+                        string inputFile = DecryptFileList.Rows[i].Cells[0].Value.ToString();
+                        string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(inputFile);
+
+                        DecryptFileList.Rows[i].Cells[3].Value = "解密中...";
+                        if (DecryptFile(inputFile, outputFile))
+                        {
+                            DecryptFileList.Rows[i].Cells[3].Value = "解密完成";
+                        }
+                        else
+                        {
+                            DecryptFileList.Rows[i].Cells[3].Value = "解密失败";
+                        }
+                    }
+                }
+
+            }
+
+            ButtonAddDocument.Enabled = true;
+            ButtonAddFolder.Enabled = true;
+            ButtonClearList.Enabled = true;
+
+            TextBoxPassword.Enabled = true;
+            WhetherDelete.Enabled = true;
         }
 
         /// <summary>
@@ -313,6 +407,119 @@ namespace UI
             if (MessageBox.Show("确认要删除该文件吗？", "删除文件", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 DecryptFileList.Rows.RemoveAt(e.RowIndex);
+            }
+        }
+
+
+        private bool EncryptFile(string inputFile, string outputFile)
+        {
+            try
+            {
+                FileStream fRead = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
+                FileStream fWrite = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
+
+                // 如果文件大于50MB，采用分块加密，按50MB读写
+                if (fRead.Length > 50 * 1024 * 1024)
+                {
+                    byte[] myByte = new byte[50 * 1024 * 1024]; //每50MB加密一次
+                    int byteRead = 50 * 1024 * 1024; // 每次加密的流的大小
+                    long leftBytes = fRead.Length; // 剩余需要加密的流大小
+                    long readBytes = 0; // 已经读取的流的大小
+                    byte[] encrypt = new byte[50 * 1024 * 1024 + 16]; // 每次加密后会增加16字节
+
+                    while (true)
+                    {
+                        if (leftBytes > byteRead)
+                        {
+                            fRead.Read(myByte, 0, myByte.Length);
+                            encrypt = AESEncrypt.Encrypt(myByte, TextBoxPassword.Text);
+                            fWrite.Write(encrypt, 0, encrypt.Length);
+                            leftBytes -= byteRead;
+                            readBytes += byteRead;
+                        }
+                        else //重新设定读取流的大小，避免最后多余空值
+                        {
+                            byte[] newByte = new byte[leftBytes];
+                            fRead.Read(newByte, 0, newByte.Length);
+                            byte[] newWriteByte = AESEncrypt.Encrypt(newByte, TextBoxPassword.Text);
+                            fRead.Write(newWriteByte, 0, newWriteByte.Length);
+                            readBytes += leftBytes;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    byte[] myByte = new byte[fRead.Length];
+                    fRead.Read(myByte, 0, myByte.Length);
+                    byte[] encrypt = AESEncrypt.Encrypt(myByte, TextBoxPassword.Text);
+                    fWrite.Write(encrypt, 0, encrypt.Length);
+                }
+
+                fRead.Close();
+                fWrite.Close();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
+        }
+
+
+        private bool DecryptFile(string inputFile, string outputFile)
+        {
+            try
+            {
+                FileStream fRead = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
+                FileStream fWrite = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
+
+                // 如果文件大于50MB，采用分块加密，按50MB读写
+                if (fRead.Length > 50 * 1024 * 1024)
+                {
+                    byte[] myByte = new byte[50 * 1024 * 1024 + 16]; // 解密缓冲区50MB+16字节
+                    int byteRead = 50 * 1024 * 1024 + 16; // 每次解密的流的大小
+                    long leftBytes = fRead.Length; // 剩余需要解密的流大小
+                    long readBytes = 0; // 已经读取的流的大小
+                    byte[] decrypt = new byte[50 * 1024 * 1024]; // 解密后的流大小
+
+                    while (true)
+                    {
+                        if (leftBytes > byteRead)
+                        {
+                            fRead.Read(myByte, 0, myByte.Length);
+                            decrypt = AESDecrypt.Decrypt(myByte, TextBoxPassword.Text);
+                            fWrite.Write(decrypt, 0, decrypt.Length);
+                            leftBytes -= byteRead;
+                            readBytes += byteRead;
+                        }
+                        else //重新设定读取流的大小，避免最后多余空值
+                        {
+                            byte[] newByte = new byte[leftBytes];
+                            fRead.Read(newByte, 0, newByte.Length);
+                            byte[] newWriteByte = AESDecrypt.Decrypt(newByte, TextBoxPassword.Text);
+                            fRead.Write(newWriteByte, 0, newWriteByte.Length);
+                            readBytes += leftBytes;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    byte[] myByte = new byte[fRead.Length];
+                    fRead.Read(myByte, 0, myByte.Length);
+                    byte[] decrypt = AESDecrypt.Decrypt(myByte, TextBoxPassword.Text);
+                    fWrite.Write(decrypt, 0, decrypt.Length);
+                }
+
+                fRead.Close();
+                fWrite.Close();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }
