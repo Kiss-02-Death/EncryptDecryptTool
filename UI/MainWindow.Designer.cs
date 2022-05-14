@@ -45,11 +45,13 @@
             this.TabPageEncrypt = new System.Windows.Forms.TabPage();
             this.EncryptFileList = new System.Windows.Forms.DataGridView();
             this.EncryptFilePath = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EncryptFileSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EncryptOperation = new System.Windows.Forms.DataGridViewLinkColumn();
             this.EncryptState = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TabPageDecrypt = new System.Windows.Forms.TabPage();
             this.DecryptFileList = new System.Windows.Forms.DataGridView();
             this.DecryptFileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DecryptFileSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DecryptOpeation = new System.Windows.Forms.DataGridViewLinkColumn();
             this.DecryptState = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ButtonAddDocument = new System.Windows.Forms.Button();
@@ -261,6 +263,7 @@
             this.EncryptFileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.EncryptFileList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.EncryptFilePath,
+            this.EncryptFileSize,
             this.EncryptOperation,
             this.EncryptState});
             this.EncryptFileList.Location = new System.Drawing.Point(0, 0);
@@ -270,6 +273,7 @@
             this.EncryptFileList.Size = new System.Drawing.Size(792, 290);
             this.EncryptFileList.TabIndex = 0;
             this.EncryptFileList.TabStop = false;
+            this.EncryptFileList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.EncryptFileList_CellContentClick);
             // 
             // EncryptFilePath
             // 
@@ -278,7 +282,15 @@
             this.EncryptFilePath.ReadOnly = true;
             this.EncryptFilePath.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.EncryptFilePath.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.EncryptFilePath.Width = 600;
+            this.EncryptFilePath.Width = 500;
+            // 
+            // EncryptFileSize
+            // 
+            this.EncryptFileSize.HeaderText = "文件大小";
+            this.EncryptFileSize.Name = "EncryptFileSize";
+            this.EncryptFileSize.ReadOnly = true;
+            this.EncryptFileSize.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.EncryptFileSize.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // EncryptOperation
             // 
@@ -318,6 +330,7 @@
             this.DecryptFileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DecryptFileList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DecryptFileName,
+            this.DecryptFileSize,
             this.DecryptOpeation,
             this.DecryptState});
             this.DecryptFileList.Location = new System.Drawing.Point(0, 0);
@@ -327,6 +340,7 @@
             this.DecryptFileList.Size = new System.Drawing.Size(792, 290);
             this.DecryptFileList.TabIndex = 0;
             this.DecryptFileList.TabStop = false;
+            this.DecryptFileList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DecryptFileList_CellContentClick);
             // 
             // DecryptFileName
             // 
@@ -335,7 +349,15 @@
             this.DecryptFileName.ReadOnly = true;
             this.DecryptFileName.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.DecryptFileName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DecryptFileName.Width = 600;
+            this.DecryptFileName.Width = 500;
+            // 
+            // DecryptFileSize
+            // 
+            this.DecryptFileSize.HeaderText = "文件大小";
+            this.DecryptFileSize.Name = "DecryptFileSize";
+            this.DecryptFileSize.ReadOnly = true;
+            this.DecryptFileSize.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.DecryptFileSize.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // DecryptOpeation
             // 
@@ -497,9 +519,11 @@
         private DataGridView DecryptFileList;
         private Label LabelTime;
         private DataGridViewTextBoxColumn EncryptFilePath;
+        private DataGridViewTextBoxColumn EncryptFileSize;
         private DataGridViewLinkColumn EncryptOperation;
         private DataGridViewTextBoxColumn EncryptState;
         private DataGridViewTextBoxColumn DecryptFileName;
+        private DataGridViewTextBoxColumn DecryptFileSize;
         private DataGridViewLinkColumn DecryptOpeation;
         private DataGridViewTextBoxColumn DecryptState;
     }

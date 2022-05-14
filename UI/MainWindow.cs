@@ -120,6 +120,7 @@ namespace UI
                     fileNames.Add(fileName);
                 }
 
+
                 if (TabControlMainWindow.SelectedIndex == 0)
                 {
                     // 向加密文件列表添加文件
@@ -203,7 +204,7 @@ namespace UI
         /// 向列表中添加文件
         /// </summary>
         /// <param name="dataGridView">列表名</param>
-        private void AddFile(List<string> fileNames ,DataGridView dataGridView)
+        private void AddFile(List<string> fileNames, DataGridView dataGridView)
         {
             int total = 0;
             int success = 0;
@@ -225,7 +226,8 @@ namespace UI
                 {
                     int rowIndex = dataGridView.Rows.Add();
                     dataGridView.Rows[rowIndex].Cells[0].Value = fileName;
-                    dataGridView.Rows[rowIndex].Cells[2].Value = "准备";
+                    dataGridView.Rows[rowIndex].Cells[1].Value = LoadFileSize(fileName);
+                    dataGridView.Rows[rowIndex].Cells[3].Value = "准备";
                     success++;
                 }
             }
@@ -258,6 +260,60 @@ namespace UI
             }
 
             return fileNames;
+        }
+
+        /// <summary>
+        /// 加载文件大小
+        /// </summary>
+        /// <param name="path">文件路径</param>
+        /// <returns>文件大小（KB）</returns>
+        private string LoadFileSize(string path)
+        {
+            FileInfo fileInfo;
+            try
+            {
+                fileInfo = new FileInfo(path);
+            }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
+
+            if (fileInfo != null && fileInfo.Exists)
+            {
+                if (fileInfo.Length > 1024 * 1024 * 1024)
+                    return Math.Round(fileInfo.Length / 1024.0 / 1024.0 / 1024.0, 1).ToString() + "GB";
+                else if (fileInfo.Length > 1024 * 1024)
+                    return Math.Round(fileInfo.Length / 1024.0 / 1024.0, 1).ToString() + "MB";
+                else
+                    return Math.Round(fileInfo.Length / 1024.0, 1).ToString() + "KB";
+            }
+            else
+            {
+                return "未知大小";
+            }
+        }
+
+        private void EncryptFileList_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1 || e.ColumnIndex == -1 || e.ColumnIndex != 2)
+                return;
+
+            if (MessageBox.Show("确认要删除该文件吗？","删除文件", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                EncryptFileList.Rows.RemoveAt(e.RowIndex);
+            }
+        }
+
+        private void DecryptFileList_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1 || e.ColumnIndex == -1 || e.ColumnIndex != 2)
+                return;
+
+            if (MessageBox.Show("确认要删除该文件吗？", "删除文件", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                DecryptFileList.Rows.RemoveAt(e.RowIndex);
+            }
         }
     }
 }
