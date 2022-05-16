@@ -224,6 +224,7 @@ namespace UI
             {
                 if (MessageBox.Show("确定要开始加密文件吗？", "开始加密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
                 {
+                    // 选择文件导出位置
                     FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
                     {
                         Description = "请选择导出位置",
@@ -245,7 +246,7 @@ namespace UI
                         if (EncryptFile(inputFile, outputFile))
                         {
                             EncryptFileList.Rows[i].Cells[3].Value = "加密完成";
-                            if (File.Exists(inputFile) && WhetherDelete.Checked)
+                            if (File.Exists(inputFile) && WhetherDelete.Checked) // 加密完成后删除源文件
                             {
                                 File.Delete(inputFile);
                             }
@@ -263,7 +264,7 @@ namespace UI
             {
                 if (MessageBox.Show("确定要开始解密文件吗？", "开始解密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
                 {
-
+                    // 选择文件导出位置
                     FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
                     {
                         Description = "请选择导出位置",
