@@ -234,6 +234,8 @@ namespace UI
                         return;
                     }
 
+                    int success = 0;
+                    int total = EncryptFileList.Rows.Count;
                     for (int i = 0; i < EncryptFileList.Rows.Count; i++)
                     {
                         string inputFile = EncryptFileList.Rows[i].Cells[0].Value.ToString();
@@ -243,14 +245,19 @@ namespace UI
                         if (EncryptFile(inputFile, outputFile))
                         {
                             EncryptFileList.Rows[i].Cells[3].Value = "加密完成";
+                            if (File.Exists(inputFile) && WhetherDelete.Checked)
+                            {
+                                File.Delete(inputFile);
+                            }
+                            success++;
                         }
                         else
                         {
                             EncryptFileList.Rows[i].Cells[3].Value = "加密失败";
                         }
                     }
+                    MessageBox.Show($"加密完成！本次共加密{total}个文件，其中{success}个文件加密成功，{total - success}个文件加密失败！");
                 }
-
             }
             else
             {
@@ -267,6 +274,8 @@ namespace UI
                         return;
                     }
 
+                    int success = 0;
+                    int total = DecryptFileList.Rows.Count;
                     for (int i = 0; i < DecryptFileList.Rows.Count; i++)
                     {
                         string inputFile = DecryptFileList.Rows[i].Cells[0].Value.ToString();
@@ -276,14 +285,19 @@ namespace UI
                         if (DecryptFile(inputFile, outputFile))
                         {
                             DecryptFileList.Rows[i].Cells[3].Value = "解密完成";
+                            if (File.Exists(inputFile) && WhetherDelete.Checked) // 解密完成后删除加密文件
+                            {
+                                File.Delete(inputFile);
+                            }
+                            success++;
                         }
                         else
                         {
                             DecryptFileList.Rows[i].Cells[3].Value = "解密失败";
                         }
                     }
+                    MessageBox.Show($"加密完成！本次共解密{total}个文件，其中{success}个文件解密成功，{total - success}个文件解密失败！");
                 }
-
             }
 
             ButtonAddDocument.Enabled = true;
@@ -410,7 +424,12 @@ namespace UI
             }
         }
 
-
+        /// <summary>
+        /// 加密文件操作
+        /// </summary>
+        /// <param name="inputFile">源文件路径</param>
+        /// <param name="outputFile">输出文件路径</param>
+        /// <returns>若加密成功，返回True，否则返回False</returns>
         private bool EncryptFile(string inputFile, string outputFile)
         {
             try
@@ -442,7 +461,7 @@ namespace UI
                             byte[] newByte = new byte[leftBytes];
                             fRead.Read(newByte, 0, newByte.Length);
                             byte[] newWriteByte = AESEncrypt.Encrypt(newByte, TextBoxPassword.Text);
-                            fRead.Write(newWriteByte, 0, newWriteByte.Length);
+                            fWrite.Write(newWriteByte, 0, newWriteByte.Length);
                             readBytes += leftBytes;
                             break;
                         }
@@ -464,10 +483,14 @@ namespace UI
             {
                 return false;
             }
-            
         }
 
-
+        /// <summary>
+        /// 解密文件操作
+        /// </summary>
+        /// <param name="inputFile">要解密的文件路径</param>
+        /// <param name="outputFile">解密后的文件路径</param>
+        /// <returns>若解密成功，返回True，否则返回False</returns>
         private bool DecryptFile(string inputFile, string outputFile)
         {
             try
@@ -499,7 +522,7 @@ namespace UI
                             byte[] newByte = new byte[leftBytes];
                             fRead.Read(newByte, 0, newByte.Length);
                             byte[] newWriteByte = AESDecrypt.Decrypt(newByte, TextBoxPassword.Text);
-                            fRead.Write(newWriteByte, 0, newWriteByte.Length);
+                            fWrite.Write(newWriteByte, 0, newWriteByte.Length);
                             readBytes += leftBytes;
                             break;
                         }
