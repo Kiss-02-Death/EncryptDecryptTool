@@ -389,7 +389,8 @@ namespace UI
             
             if (TabControlMainWindow.SelectedIndex == 0)
             {
-                if (MessageBox.Show("确定要开始加密文件吗？", "开始加密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                if (MessageBox.Show("确定要开始加密文件吗？\n" +
+                    "（若导出位置有重名文件，则会被覆盖！）", "开始加密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
                 {
                     // 选择文件导出位置
                     FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
@@ -413,10 +414,6 @@ namespace UI
                             string inputFile = EncryptFileList.Rows[i].Cells[0].Value.ToString();
                             string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileName(inputFile) + ".WPFENCRYPT";
 
-                            // 如果输出目录有重名文件，则删除重名文件
-                            if (File.Exists(outputFile))
-                                File.Delete(outputFile);
-
                             // 如果勾选了删除源文件、则加密完成后删除源文件
                             if (EncryptFile(inputFile, outputFile, i) && File.Exists(inputFile) && WhetherDelete.Checked)
                             {
@@ -432,7 +429,8 @@ namespace UI
             }
             else
             {
-                if (MessageBox.Show("确定要开始解密文件吗？", "开始解密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                if (MessageBox.Show("确定要开始解密文件吗？\n" +
+                    "（若导出位置有重名文件，则会被覆盖！）", "开始解密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
                 {
                     // 选择文件导出位置
                     FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
@@ -455,10 +453,6 @@ namespace UI
                             this.BeginInvoke(dgvUpdata, new object[] { 2, i }); // 更新解密列表数据
                             string inputFile = DecryptFileList.Rows[i].Cells[0].Value.ToString();
                             string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(inputFile);
-
-                            // 如果输出目录有重名文件，则删除重名文件
-                            if (File.Exists(outputFile))
-                                File.Delete(outputFile);
 
                             // 如果勾选了删除源文件、则解密完成后删除源文件
                             if (DecryptFile(inputFile, outputFile, i) && File.Exists(inputFile) && WhetherDelete.Checked)
