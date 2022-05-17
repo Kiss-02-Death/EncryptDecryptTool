@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Decrypt\Decrypt.csproj" />
     <ProjectReference Include="..\Encrypt\Encrypt.csproj" />
+    <ProjectReference Include="..\UIDelegate\UIDelegate.csproj" />
   </ItemGroup>
 
   <ItemGroup>

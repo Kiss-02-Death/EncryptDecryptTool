@@ -1,5 +1,6 @@
 using Encrypt;
 using Decrypt;
+using UIDelegate;
 
 namespace UI
 {
@@ -9,9 +10,20 @@ namespace UI
         private Point StartPoint = new Point(0, 0); // 记录鼠标按下去的坐标
         private Point OffsetPoint = new Point(0, 0); // 记录偏移量
 
+        private DgvUpdata dgvUpdata = null; // 表格记录更新委托
+        private DgvProgress dgvProgress = null; // 加解密进度更新委托
+        private FormUpdata formUpdata = null; // 界面更新委托
+
+
         public MainWindow()
         {
             InitializeComponent();
+            // 给表格记录更新绑定 表格记录更新函数
+            dgvUpdata = SetDGVUpdata;
+            // 给加解密进度更新委托绑定 操作进度反馈函数
+            dgvProgress = SetOperationProgress;
+            // 给界面更新委托绑定 界面更新函数
+            formUpdata = SetFormControl;
         }
 
         /// <summary>
@@ -21,6 +33,7 @@ namespace UI
         /// <param name="e"></param>
         private void MainWindow_Load(object sender, EventArgs e)
         {
+            // 界面初始后默认加载加密界面
             ButtonTabEncrypt_Click(sender, e);
         }
 
@@ -83,6 +96,7 @@ namespace UI
         {
             ButtonTabEncrypt.ForeColor = Color.White;
             ButtonTabDecrypt.ForeColor = Color.DeepSkyBlue;
+            // 切换加密窗口
             TabControlMainWindow.SelectTab(0);
             WhetherDelete.Text = "加密完成后删除源文件";
             ButtonRun.Text = "开始加密";
@@ -97,6 +111,7 @@ namespace UI
         {
             ButtonTabEncrypt.ForeColor = Color.DeepSkyBlue;
             ButtonTabDecrypt.ForeColor = Color.White;
+            // 切换解密窗口
             TabControlMainWindow.SelectTab(1);
             WhetherDelete.Text = "解密完成后删除源文件";
             ButtonRun.Text = "开始解密";
@@ -109,6 +124,7 @@ namespace UI
         /// <param name="e"></param>
         private void ButtonAddDocument_Click(object sender, EventArgs e)
         {
+            // 新建 打开文件对话框，允许选择多个文件
             OpenFileDialog openFileDialog;
             if (TabControlMainWindow.SelectedIndex == 0)
             {
@@ -128,7 +144,7 @@ namespace UI
                     Multiselect = true
                 };
             }
-
+            // 如果对话框返回值为OK，则添加选择的文件
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 List<string> fileNames = new List<string>();
@@ -214,12 +230,50 @@ namespace UI
         /// <param name="e"></param>
         private void ButtonRun_Click(object sender, EventArgs e)
         {
-            ButtonAddDocument.Enabled = false;
-            ButtonAddFolder.Enabled = false;
-            ButtonClearList.Enabled = false;
-            TextBoxPassword.Enabled = false;
-            WhetherDelete.Enabled = false;
-
+            // 先对列表进行处理，把历史记录清理掉
+            List<int> rowIndexs = new List<int>();
+            if (TabControlMainWindow.SelectedIndex == 0)
+            {
+                // 找出所有历史行的行索引值
+                for (int i = EncryptFileList.Rows.Count - 1; i >= 0; i--)
+                {
+                    if (EncryptFileList.Rows[i].Cells[4].Value.ToString() == "是")
+                        rowIndexs.Add(i);
+                }
+                // 删除这些历史行
+                if (rowIndexs.Count > 0)
+                {
+                    foreach (int rowIndex in rowIndexs)
+                    {
+                        EncryptFileList.Rows.RemoveAt(rowIndex);
+                    }
+                }
+                // 如果加密列表数量为0，直接return
+                if (EncryptFileList.Rows.Count == 0)
+                    return;
+            }
+            else
+            {
+                // 找出所有历史行的行索引值
+                for (int i = DecryptFileList.Rows.Count - 1; i >= 0; i--)
+                {
+                    if (DecryptFileList.Rows[i].Cells[4].Value.ToString() == "是")
+                        rowIndexs.Add(i);
+                }
+                // 删除这些历史行
+                if (rowIndexs.Count > 0)
+                {
+                    foreach (int rowIndex in rowIndexs)
+                    {
+                        DecryptFileList.Rows.RemoveAt(rowIndex);
+                    }
+                }
+                // 如果解密列表数量为0，直接return
+                if (DecryptFileList.Rows.Count == 0)
+                    return;
+            }
+            
+            this.formUpdata?.Invoke(false);
             if (TabControlMainWindow.SelectedIndex == 0)
             {
                 if (MessageBox.Show("确定要开始加密文件吗？", "开始加密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
@@ -234,31 +288,25 @@ namespace UI
                     {
                         return;
                     }
-
-                    int success = 0;
-                    int total = EncryptFileList.Rows.Count;
-                    for (int i = 0; i < EncryptFileList.Rows.Count; i++)
+                    Task.Factory.StartNew(() =>
                     {
-                        string inputFile = EncryptFileList.Rows[i].Cells[0].Value.ToString();
-                        string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileName(inputFile) + ".encrypt";
-
-                        EncryptFileList.Rows[i].Cells[3].Value = "加密中...";
-                        if (EncryptFile(inputFile, outputFile))
+                        for (int i = 0; i < EncryptFileList.Rows.Count; i++)
                         {
-                            EncryptFileList.Rows[i].Cells[3].Value = "加密完成";
-                            if (File.Exists(inputFile) && WhetherDelete.Checked) // 加密完成后删除源文件
+                            this.BeginInvoke(dgvUpdata, new object[] { 1, i });
+                            string inputFile = EncryptFileList.Rows[i].Cells[0].Value.ToString();
+                            string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileName(inputFile) + ".encrypt";
+
+                            // 加密完成后删除源文件
+                            if (EncryptFile(inputFile, outputFile, i) && File.Exists(inputFile) && WhetherDelete.Checked)
                             {
                                 File.Delete(inputFile);
                             }
-                            success++;
                         }
-                        else
-                        {
-                            EncryptFileList.Rows[i].Cells[3].Value = "加密失败";
-                        }
-                    }
-                    MessageBox.Show($"加密完成！本次共加密{total}个文件，其中{success}个文件加密成功，{total - success}个文件加密失败！");
+                        MessageBox.Show("加密完成！","提示",MessageBoxButtons.OK, MessageBoxIcon.Question);
+                        this.BeginInvoke(formUpdata, new object[] { true });
+                    });
                 }
+                
             }
             else
             {
@@ -275,38 +323,25 @@ namespace UI
                         return;
                     }
 
-                    int success = 0;
-                    int total = DecryptFileList.Rows.Count;
-                    for (int i = 0; i < DecryptFileList.Rows.Count; i++)
+                    Task.Factory.StartNew(() =>
                     {
-                        string inputFile = DecryptFileList.Rows[i].Cells[0].Value.ToString();
-                        string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(inputFile);
-
-                        DecryptFileList.Rows[i].Cells[3].Value = "解密中...";
-                        if (DecryptFile(inputFile, outputFile))
+                        for (int i = 0; i < DecryptFileList.Rows.Count; i++)
                         {
-                            DecryptFileList.Rows[i].Cells[3].Value = "解密完成";
-                            if (File.Exists(inputFile) && WhetherDelete.Checked) // 解密完成后删除加密文件
+                            this.BeginInvoke(dgvUpdata, new object[] { 2, i });
+                            string inputFile = DecryptFileList.Rows[i].Cells[0].Value.ToString();
+                            string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(inputFile);
+
+                            // 解密完成后删除源文件
+                            if (DecryptFile(inputFile, outputFile, i) && File.Exists(inputFile) && WhetherDelete.Checked)
                             {
                                 File.Delete(inputFile);
                             }
-                            success++;
                         }
-                        else
-                        {
-                            DecryptFileList.Rows[i].Cells[3].Value = "解密失败";
-                        }
-                    }
-                    MessageBox.Show($"加密完成！本次共解密{total}个文件，其中{success}个文件解密成功，{total - success}个文件解密失败！");
+                        MessageBox.Show("解密完成！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Question);
+                        this.BeginInvoke(formUpdata, new object[] { true });
+                    });
                 }
             }
-
-            ButtonAddDocument.Enabled = true;
-            ButtonAddFolder.Enabled = true;
-            ButtonClearList.Enabled = true;
-
-            TextBoxPassword.Enabled = true;
-            WhetherDelete.Enabled = true;
         }
 
         /// <summary>
@@ -337,6 +372,7 @@ namespace UI
                     dataGridView.Rows[rowIndex].Cells[0].Value = fileName;
                     dataGridView.Rows[rowIndex].Cells[1].Value = LoadFileSize(fileName);
                     dataGridView.Rows[rowIndex].Cells[3].Value = "准备";
+                    dataGridView.Rows[rowIndex].Cells[4].Value = "否";
                     success++;
                 }
             }
@@ -403,6 +439,11 @@ namespace UI
             }
         }
 
+        /// <summary>
+        /// 加密列表删除文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EncryptFileList_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex == -1 || e.ColumnIndex == -1 || e.ColumnIndex != 2)
@@ -414,6 +455,11 @@ namespace UI
             }
         }
 
+        /// <summary>
+        /// 解密列表删除文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DecryptFileList_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex == -1 || e.ColumnIndex == -1 || e.ColumnIndex != 2)
@@ -430,22 +476,24 @@ namespace UI
         /// </summary>
         /// <param name="inputFile">源文件路径</param>
         /// <param name="outputFile">输出文件路径</param>
+        /// <param name="rowIndex">当前操作所在dgv的行索引</param>
         /// <returns>若加密成功，返回True，否则返回False</returns>
-        private bool EncryptFile(string inputFile, string outputFile)
+        private bool EncryptFile(string inputFile, string outputFile, int rowIndex)
         {
+            this.dgvProgress?.Invoke(1, rowIndex, 0);
             try
             {
                 FileStream fRead = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
                 FileStream fWrite = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
 
-                // 如果文件大于50MB，采用分块加密，按50MB读写
-                if (fRead.Length > 50 * 1024 * 1024)
+                // 如果文件大于10MB，采用分块加密，按10MB读写
+                if (fRead.Length > 10 * 1024 * 1024)
                 {
-                    byte[] myByte = new byte[50 * 1024 * 1024]; //每50MB加密一次
-                    int byteRead = 50 * 1024 * 1024; // 每次加密的流的大小
+                    byte[] myByte = new byte[10 * 1024 * 1024]; // 每10MB加密一次
+                    int byteRead = 10 * 1024 * 1024; // 每次加密的流的大小
                     long leftBytes = fRead.Length; // 剩余需要加密的流大小
                     long readBytes = 0; // 已经读取的流的大小
-                    byte[] encrypt = new byte[50 * 1024 * 1024 + 16]; // 每次加密后会增加16字节
+                    byte[] encrypt = new byte[10 * 1024 * 1024 + 16]; // 每次加密后会增加16字节
 
                     while (true)
                     {
@@ -457,7 +505,7 @@ namespace UI
                             leftBytes -= byteRead;
                             readBytes += byteRead;
                         }
-                        else //重新设定读取流的大小，避免最后多余空值
+                        else // 重新设定读取流的大小，避免最后多余空值
                         {
                             byte[] newByte = new byte[leftBytes];
                             fRead.Read(newByte, 0, newByte.Length);
@@ -466,6 +514,8 @@ namespace UI
                             readBytes += leftBytes;
                             break;
                         }
+                        int progress = Convert.ToInt32(readBytes * 100 / fRead.Length);
+                        this.dgvProgress?.Invoke(1, rowIndex, progress);
                     }
                 }
                 else
@@ -475,7 +525,7 @@ namespace UI
                     byte[] encrypt = AESEncrypt.Encrypt(myByte, TextBoxPassword.Text);
                     fWrite.Write(encrypt, 0, encrypt.Length);
                 }
-
+                this.dgvProgress?.Invoke(1, rowIndex, 100);
                 fRead.Close();
                 fWrite.Close();
                 return true;
@@ -491,22 +541,24 @@ namespace UI
         /// </summary>
         /// <param name="inputFile">要解密的文件路径</param>
         /// <param name="outputFile">解密后的文件路径</param>
+        /// <param name="rowIndex">当前操作所在dgv的行索引</param>
         /// <returns>若解密成功，返回True，否则返回False</returns>
-        private bool DecryptFile(string inputFile, string outputFile)
+        private bool DecryptFile(string inputFile, string outputFile, int rowIndex)
         {
+            this.dgvProgress?.Invoke(2, rowIndex, 0);
             try
             {
                 FileStream fRead = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
                 FileStream fWrite = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
 
-                // 如果文件大于50MB，采用分块加密，按50MB读写
-                if (fRead.Length > 50 * 1024 * 1024)
+                // 如果文件大于10MB，采用分块加密，按10MB读写
+                if (fRead.Length > 10 * 1024 * 1024)
                 {
-                    byte[] myByte = new byte[50 * 1024 * 1024 + 16]; // 解密缓冲区50MB+16字节
-                    int byteRead = 50 * 1024 * 1024 + 16; // 每次解密的流的大小
+                    byte[] myByte = new byte[10 * 1024 * 1024 + 16]; // 解密缓冲区10MB+16字节
+                    int byteRead = 10 * 1024 * 1024 + 16; // 每次解密的流的大小
                     long leftBytes = fRead.Length; // 剩余需要解密的流大小
                     long readBytes = 0; // 已经读取的流的大小
-                    byte[] decrypt = new byte[50 * 1024 * 1024]; // 解密后的流大小
+                    byte[] decrypt = new byte[10 * 1024 * 1024]; // 解密后的流大小
 
                     while (true)
                     {
@@ -518,7 +570,7 @@ namespace UI
                             leftBytes -= byteRead;
                             readBytes += byteRead;
                         }
-                        else //重新设定读取流的大小，避免最后多余空值
+                        else // 重新设定读取流的大小，避免最后多余空值
                         {
                             byte[] newByte = new byte[leftBytes];
                             fRead.Read(newByte, 0, newByte.Length);
@@ -527,6 +579,8 @@ namespace UI
                             readBytes += leftBytes;
                             break;
                         }
+                        int progress = Convert.ToInt32(readBytes * 100 / fRead.Length);
+                        this.dgvProgress?.Invoke(2, rowIndex, progress);
                     }
                 }
                 else
@@ -536,7 +590,7 @@ namespace UI
                     byte[] decrypt = AESDecrypt.Decrypt(myByte, TextBoxPassword.Text);
                     fWrite.Write(decrypt, 0, decrypt.Length);
                 }
-
+                this.dgvProgress?.Invoke(2, rowIndex, 100);
                 fRead.Close();
                 fWrite.Close();
                 return true;
@@ -544,6 +598,67 @@ namespace UI
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// 更改列表行的记录，被操作过的行记为历史行
+        /// </summary>
+        /// <param name="type">类型值：1为加密，2为解密</param>
+        /// <param name="rowIndex">当前操作行索引值</param>
+        private void SetDGVUpdata(int type, int rowIndex)
+        {
+            if (type == 1)
+                EncryptFileList.Rows[rowIndex].Cells[4].Value = "是";
+            else
+                DecryptFileList.Rows[rowIndex].Cells[4].Value = "是";
+        }
+
+        /// <summary>
+        /// 加/解密进度反馈
+        /// </summary>
+        /// <param name="type">类型值：1为加密，2为解密</param>
+        /// <param name="rowIndex">当前操作行索引值</param>
+        /// <param name="progress">进度</param>
+        private void SetOperationProgress(int type, int rowIndex, int progress)
+        {
+            if (type == 1)
+                EncryptFileList.Rows[rowIndex].Cells[3].Value = progress + "%";
+            else
+                DecryptFileList.Rows[rowIndex].Cells[3].Value = progress + "%";
+        }
+
+        /// <summary>
+        /// 界面更新函数
+        /// </summary>
+        /// <param name="isComplete">是否完成加/解密</param>
+        private void SetFormControl(bool isComplete)
+        {
+            if (isComplete)
+            {
+                ButtonTabEncrypt.Enabled = true;
+                ButtonTabDecrypt.Enabled = true;
+
+                ButtonAddDocument.Enabled = true;
+                ButtonAddFolder.Enabled = true;
+                ButtonClearList.Enabled = true;
+
+                TextBoxPassword.Enabled = true;
+                WhetherDelete.Enabled = true;
+                ButtonRun.Enabled = true;
+            }
+            else
+            {
+                ButtonTabEncrypt.Enabled = false;
+                ButtonTabDecrypt.Enabled = false;
+
+                ButtonAddDocument.Enabled = false;
+                ButtonAddFolder.Enabled = false;
+                ButtonClearList.Enabled = false;
+
+                TextBoxPassword.Enabled = false;
+                WhetherDelete.Enabled = false;
+                ButtonRun.Enabled = false;
             }
         }
     }
