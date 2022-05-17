@@ -9,10 +9,12 @@ namespace UI
         private static bool IsDragging = false; // 用于指示当前是否拖拽状态
         private Point StartPoint = new Point(0, 0); // 记录鼠标按下去的坐标
         private Point OffsetPoint = new Point(0, 0); // 记录偏移量
+        private DateTime StartDateTime; // 记录开始时间
 
         private DgvUpdata dgvUpdata = null; // 表格记录更新委托
         private DgvProgress dgvProgress = null; // 加解密进度更新委托
         private FormUpdata formUpdata = null; // 界面更新委托
+        private StopWatchUpdata stopWatchUpdata = null; // 计时器状态更新委托
 
 
         public MainWindow()
@@ -24,6 +26,8 @@ namespace UI
             dgvProgress = SetOperationProgress;
             // 给界面更新委托绑定 界面更新函数
             formUpdata = SetFormControl;
+            // 给计时器状态更新委托绑定 计时器状态函数
+            stopWatchUpdata = SetStopWatchState;
         }
 
         /// <summary>
@@ -288,8 +292,11 @@ namespace UI
                     {
                         return;
                     }
+                    LabelTime.Text = "已用时间：00:00:00";
                     Task.Factory.StartNew(() =>
                     {
+                        StartDateTime = DateTime.Now;
+                        this.BeginInvoke(stopWatchUpdata, new object[] { 1 }); // 开始计时
                         for (int i = 0; i < EncryptFileList.Rows.Count; i++)
                         {
                             this.BeginInvoke(dgvUpdata, new object[] { 1, i });
@@ -302,6 +309,7 @@ namespace UI
                                 File.Delete(inputFile);
                             }
                         }
+                        this.BeginInvoke(stopWatchUpdata, new object[] { 2 }); // 结束计时
                         MessageBox.Show("加密完成！","提示",MessageBoxButtons.OK, MessageBoxIcon.Question);
                         this.BeginInvoke(formUpdata, new object[] { true });
                     });
@@ -322,9 +330,11 @@ namespace UI
                     {
                         return;
                     }
-
+                    LabelTime.Text = "已用时间：00:00:00";
                     Task.Factory.StartNew(() =>
                     {
+                        StartDateTime = DateTime.Now;
+                        this.BeginInvoke(stopWatchUpdata, new object[] { 1 }); // 开始计时
                         for (int i = 0; i < DecryptFileList.Rows.Count; i++)
                         {
                             this.BeginInvoke(dgvUpdata, new object[] { 2, i });
@@ -337,6 +347,7 @@ namespace UI
                                 File.Delete(inputFile);
                             }
                         }
+                        this.BeginInvoke(stopWatchUpdata, new object[] { 2 }); // 结束计时
                         MessageBox.Show("解密完成！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Question);
                         this.BeginInvoke(formUpdata, new object[] { true });
                     });
@@ -660,6 +671,25 @@ namespace UI
                 WhetherDelete.Enabled = false;
                 ButtonRun.Enabled = false;
             }
+        }
+
+        /// <summary>
+        /// 设置计时器状态
+        /// </summary>
+        /// <param name="type">类型值：1为开始，2为停止</param>
+        private void SetStopWatchState(int type)
+        {
+            if (type == 1)
+                StopWatch.Start();
+            else
+                StopWatch.Stop();
+        }
+
+
+        private void StopWatch_Tick(object sender, EventArgs e)
+        {
+            TimeSpan timeCount = DateTime.Now - StartDateTime;
+            LabelTime.Text = "已用时间：" + string.Format("{0:00}:{1:00}:{2:00}", timeCount.Hours, timeCount.Minutes, timeCount.Seconds);
         }
     }
 }
