@@ -144,7 +144,7 @@ namespace UI
                 openFileDialog = new OpenFileDialog()
                 {
                     Title = "添加文件",
-                    Filter = "encrypt文件|*.encrypt",
+                    Filter = "WPFENCRYPT文件|*.WPFENCRYPT",
                     Multiselect = true
                 };
             }
@@ -196,164 +196,23 @@ namespace UI
                 }
                 else
                 {
+                    // 记录非 .WPFENCRYPT 拓展名的文件索引，删除掉
+                    List<int> indexes = new List<int>();
+                    for (int i = fileNames.Count - 1; i >= 0; i--)
+                    {
+                        if (Path.GetExtension(fileNames[i]) != ".WPFENCRYPT")
+                            indexes.Add(i);
+                    }
+                    if (indexes.Count > 0)
+                    {
+                        foreach (int index in indexes)
+                        {
+                            fileNames.RemoveAt(index);
+                        }
+                    }
+
                     // 向解密文件列表添加文件
                     AddFile(fileNames, DecryptFileList);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 清空列表
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ButtonClearList_Click(object sender, EventArgs e)
-        {
-            if (TabControlMainWindow.SelectedIndex == 0)
-            {
-                if (EncryptFileList.Rows.Count == 0)
-                    return;
-
-                if (MessageBox.Show("确认清空加密文件列表吗？", "清空列表", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
-                    EncryptFileList.Rows.Clear();
-            }
-            else
-            {
-                if (DecryptFileList.Rows.Count == 0)
-                    return;
-
-                if (MessageBox.Show("确认清空解密文件列表吗？", "清空列表", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
-                    DecryptFileList.Rows.Clear();
-            }
-        }
-
-        /// <summary>
-        /// 执行加密/解密操作
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ButtonRun_Click(object sender, EventArgs e)
-        {
-            // 先对列表进行处理，把历史记录清理掉
-            List<int> rowIndexs = new List<int>();
-            if (TabControlMainWindow.SelectedIndex == 0)
-            {
-                // 找出所有历史行的行索引值
-                for (int i = EncryptFileList.Rows.Count - 1; i >= 0; i--)
-                {
-                    if (EncryptFileList.Rows[i].Cells[4].Value.ToString() == "是")
-                        rowIndexs.Add(i);
-                }
-                // 删除这些历史行
-                if (rowIndexs.Count > 0)
-                {
-                    foreach (int rowIndex in rowIndexs)
-                    {
-                        EncryptFileList.Rows.RemoveAt(rowIndex);
-                    }
-                }
-                // 如果加密列表数量为0，直接return
-                if (EncryptFileList.Rows.Count == 0)
-                    return;
-            }
-            else
-            {
-                // 找出所有历史行的行索引值
-                for (int i = DecryptFileList.Rows.Count - 1; i >= 0; i--)
-                {
-                    if (DecryptFileList.Rows[i].Cells[4].Value.ToString() == "是")
-                        rowIndexs.Add(i);
-                }
-                // 删除这些历史行
-                if (rowIndexs.Count > 0)
-                {
-                    foreach (int rowIndex in rowIndexs)
-                    {
-                        DecryptFileList.Rows.RemoveAt(rowIndex);
-                    }
-                }
-                // 如果解密列表数量为0，直接return
-                if (DecryptFileList.Rows.Count == 0)
-                    return;
-            }
-            
-            if (TabControlMainWindow.SelectedIndex == 0)
-            {
-                if (MessageBox.Show("确定要开始加密文件吗？", "开始加密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
-                {
-                    // 选择文件导出位置
-                    FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
-                    {
-                        Description = "请选择导出位置",
-                        ShowNewFolderButton = true
-                    };
-                    if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    LabelTime.Text = "已用时间：00:00:00";
-                    Task.Factory.StartNew(() =>
-                    {
-                        this.BeginInvoke(formUpdata, new object[] { false }); // 锁定按钮
-                        StartDateTime = DateTime.Now; // 记录开始时间
-                        this.BeginInvoke(stopWatchUpdata, new object[] { 1 }); // 开始计时
-                        for (int i = 0; i < EncryptFileList.Rows.Count; i++)
-                        {
-                            this.BeginInvoke(dgvUpdata, new object[] { 1, i }); // 更新加密列表数据
-                            string inputFile = EncryptFileList.Rows[i].Cells[0].Value.ToString();
-                            string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileName(inputFile) + ".encrypt";
-
-                            // 如果输出目录有重名文件，则
-
-                            // 如果勾选了删除源文件、则加密完成后删除源文件
-                            if (EncryptFile(inputFile, outputFile, i) && File.Exists(inputFile) && WhetherDelete.Checked)
-                            {
-                                File.Delete(inputFile);
-                            }
-                        }
-                        this.BeginInvoke(stopWatchUpdata, new object[] { 2 }); // 结束计时
-                        MessageBox.Show("加密完成！","提示",MessageBoxButtons.OK, MessageBoxIcon.Question);
-                        this.BeginInvoke(formUpdata, new object[] { true }); // 解锁按钮
-                    });
-                }
-                
-            }
-            else
-            {
-                if (MessageBox.Show("确定要开始解密文件吗？", "开始解密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
-                {
-                    // 选择文件导出位置
-                    FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
-                    {
-                        Description = "请选择导出位置",
-                        ShowNewFolderButton = true
-                    };
-                    if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    LabelTime.Text = "已用时间：00:00:00";
-                    Task.Factory.StartNew(() =>
-                    {
-                        this.BeginInvoke(formUpdata, new object[] { false }); // 锁定按钮
-                        StartDateTime = DateTime.Now; // 记录开始时间
-                        this.BeginInvoke(stopWatchUpdata, new object[] { 1 }); // 开始计时
-                        for (int i = 0; i < DecryptFileList.Rows.Count; i++)
-                        {
-                            this.BeginInvoke(dgvUpdata, new object[] { 2, i }); // 更新解密列表数据
-                            string inputFile = DecryptFileList.Rows[i].Cells[0].Value.ToString();
-                            string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(inputFile);
-
-                            // 如果勾选了删除源文件、则解密完成后删除源文件
-                            if (DecryptFile(inputFile, outputFile, i) && File.Exists(inputFile) && WhetherDelete.Checked)
-                            {
-                                File.Delete(inputFile);
-                            }
-                        }
-                        this.BeginInvoke(stopWatchUpdata, new object[] { 2 }); // 结束计时
-                        MessageBox.Show("解密完成！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Question);
-                        this.BeginInvoke(formUpdata, new object[] { true }); // 解锁按钮
-                    });
                 }
             }
         }
@@ -433,7 +292,7 @@ namespace UI
             {
                 fileInfo = new FileInfo(path);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return e.Message;
             }
@@ -450,6 +309,168 @@ namespace UI
             else
             {
                 return "未知大小";
+            }
+        }
+
+        /// <summary>
+        /// 清空列表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonClearList_Click(object sender, EventArgs e)
+        {
+            if (TabControlMainWindow.SelectedIndex == 0)
+            {
+                if (EncryptFileList.Rows.Count == 0)
+                    return;
+
+                if (MessageBox.Show("确认清空加密文件列表吗？", "清空列表", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                    EncryptFileList.Rows.Clear();
+            }
+            else
+            {
+                if (DecryptFileList.Rows.Count == 0)
+                    return;
+
+                if (MessageBox.Show("确认清空解密文件列表吗？", "清空列表", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                    DecryptFileList.Rows.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 执行加密/解密操作
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonRun_Click(object sender, EventArgs e)
+        {
+            // 先对列表进行处理，把历史记录清理掉
+            List<int> rowIndexes = new List<int>();
+            if (TabControlMainWindow.SelectedIndex == 0)
+            {
+                // 找出所有历史行的行索引值
+                for (int i = EncryptFileList.Rows.Count - 1; i >= 0; i--)
+                {
+                    if (EncryptFileList.Rows[i].Cells[4].Value.ToString() == "是")
+                        rowIndexes.Add(i);
+                }
+                // 删除这些历史行
+                if (rowIndexes.Count > 0)
+                {
+                    foreach (int rowIndex in rowIndexes)
+                    {
+                        EncryptFileList.Rows.RemoveAt(rowIndex);
+                    }
+                }
+                // 如果加密列表数量为0，直接return
+                if (EncryptFileList.Rows.Count == 0)
+                    return;
+            }
+            else
+            {
+                // 找出所有历史行的行索引值
+                for (int i = DecryptFileList.Rows.Count - 1; i >= 0; i--)
+                {
+                    if (DecryptFileList.Rows[i].Cells[4].Value.ToString() == "是")
+                        rowIndexes.Add(i);
+                }
+                // 删除这些历史行
+                if (rowIndexes.Count > 0)
+                {
+                    foreach (int rowIndex in rowIndexes)
+                    {
+                        DecryptFileList.Rows.RemoveAt(rowIndex);
+                    }
+                }
+                // 如果解密列表数量为0，直接return
+                if (DecryptFileList.Rows.Count == 0)
+                    return;
+            }
+            
+            if (TabControlMainWindow.SelectedIndex == 0)
+            {
+                if (MessageBox.Show("确定要开始加密文件吗？", "开始加密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                {
+                    // 选择文件导出位置
+                    FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+                    {
+                        Description = "请选择导出位置",
+                        ShowNewFolderButton = true
+                    };
+                    if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    LabelTime.Text = "已用时间：00:00:00";
+                    Task.Factory.StartNew(() =>
+                    {
+                        this.BeginInvoke(formUpdata, new object[] { false }); // 锁定按钮
+                        StartDateTime = DateTime.Now; // 记录开始时间
+                        this.BeginInvoke(stopWatchUpdata, new object[] { 1 }); // 开始计时
+                        for (int i = 0; i < EncryptFileList.Rows.Count; i++)
+                        {
+                            this.BeginInvoke(dgvUpdata, new object[] { 1, i }); // 更新加密列表数据
+                            string inputFile = EncryptFileList.Rows[i].Cells[0].Value.ToString();
+                            string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileName(inputFile) + ".WPFENCRYPT";
+
+                            // 如果输出目录有重名文件，则删除重名文件
+                            if (File.Exists(outputFile))
+                                File.Delete(outputFile);
+
+                            // 如果勾选了删除源文件、则加密完成后删除源文件
+                            if (EncryptFile(inputFile, outputFile, i) && File.Exists(inputFile) && WhetherDelete.Checked)
+                            {
+                                File.Delete(inputFile);
+                            }
+                        }
+                        this.BeginInvoke(stopWatchUpdata, new object[] { 2 }); // 结束计时
+                        MessageBox.Show("加密完成！","提示",MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.BeginInvoke(formUpdata, new object[] { true }); // 解锁按钮
+                    });
+                }
+                
+            }
+            else
+            {
+                if (MessageBox.Show("确定要开始解密文件吗？", "开始解密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                {
+                    // 选择文件导出位置
+                    FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog()
+                    {
+                        Description = "请选择导出位置",
+                        ShowNewFolderButton = true
+                    };
+                    if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    LabelTime.Text = "已用时间：00:00:00";
+                    Task.Factory.StartNew(() =>
+                    {
+                        this.BeginInvoke(formUpdata, new object[] { false }); // 锁定按钮
+                        StartDateTime = DateTime.Now; // 记录开始时间
+                        this.BeginInvoke(stopWatchUpdata, new object[] { 1 }); // 开始计时
+                        for (int i = 0; i < DecryptFileList.Rows.Count; i++)
+                        {
+                            this.BeginInvoke(dgvUpdata, new object[] { 2, i }); // 更新解密列表数据
+                            string inputFile = DecryptFileList.Rows[i].Cells[0].Value.ToString();
+                            string outputFile = folderBrowserDialog.SelectedPath + "\\" + Path.GetFileNameWithoutExtension(inputFile);
+
+                            // 如果输出目录有重名文件，则删除重名文件
+                            if (File.Exists(outputFile))
+                                File.Delete(outputFile);
+
+                            // 如果勾选了删除源文件、则解密完成后删除源文件
+                            if (DecryptFile(inputFile, outputFile, i) && File.Exists(inputFile) && WhetherDelete.Checked)
+                            {
+                                File.Delete(inputFile);
+                            }
+                        }
+                        this.BeginInvoke(stopWatchUpdata, new object[] { 2 }); // 结束计时
+                        MessageBox.Show("解密完成！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.BeginInvoke(formUpdata, new object[] { true }); // 解锁按钮
+                    });
+                }
             }
         }
 
