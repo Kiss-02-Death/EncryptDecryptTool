@@ -20,7 +20,7 @@ namespace UI
         public MainWindow()
         {
             InitializeComponent();
-            // 给表格记录更新绑定 表格记录更新函数
+            // 给表格记录更新委托绑定 表格记录更新函数
             dgvUpdata = SetDGVUpdata;
             // 给加解密进度更新委托绑定 操作进度反馈函数
             dgvProgress = SetOperationProgress;
@@ -260,7 +260,6 @@ namespace UI
         private List<string> FindAllFile(string path)
         {
             List<string> fileNames = new List<string>();
-
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
             FileSystemInfo[] fileSystemInfos = directoryInfo.GetFileSystemInfos();
             foreach (FileSystemInfo fileSystemInfo in fileSystemInfos)
@@ -276,7 +275,6 @@ namespace UI
                     fileNames.Add(fileSystemInfo.FullName);
                 }
             }
-
             return fileNames;
         }
 
@@ -346,7 +344,7 @@ namespace UI
         {
             // 先对列表进行处理，把历史记录清理掉
             List<int> rowIndexes = new List<int>();
-            if (TabControlMainWindow.SelectedIndex == 0)
+            if (TabControlMainWindow.SelectedIndex == 0) // 当前界面在加密界面时
             {
                 // 找出所有历史行的行索引值
                 for (int i = EncryptFileList.Rows.Count - 1; i >= 0; i--)
@@ -366,7 +364,7 @@ namespace UI
                 if (EncryptFileList.Rows.Count == 0)
                     return;
             }
-            else
+            else // 当前界面在解密界面时
             {
                 // 找出所有历史行的行索引值
                 for (int i = DecryptFileList.Rows.Count - 1; i >= 0; i--)
@@ -387,7 +385,7 @@ namespace UI
                     return;
             }
             
-            if (TabControlMainWindow.SelectedIndex == 0)
+            if (TabControlMainWindow.SelectedIndex == 0) // 当前界面在加密界面时
             {
                 if (MessageBox.Show("确定要开始加密文件吗？\n" +
                     "（若导出位置有重名文件，则会被覆盖！）", "开始加密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
@@ -427,7 +425,7 @@ namespace UI
                 }
                 
             }
-            else
+            else // 当前界面在解密界面时
             {
                 if (MessageBox.Show("确定要开始解密文件吗？\n" +
                     "（若导出位置有重名文件，则会被覆盖！）", "开始解密", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
