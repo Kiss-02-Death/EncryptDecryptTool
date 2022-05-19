@@ -474,10 +474,12 @@
             this.TextBoxPassword.Location = new System.Drawing.Point(295, 397);
             this.TextBoxPassword.MaxLength = 32;
             this.TextBoxPassword.Name = "TextBoxPassword";
+            this.TextBoxPassword.PlaceholderText = "若为空，则解密时也不需要输入密码";
             this.TextBoxPassword.Size = new System.Drawing.Size(250, 23);
             this.TextBoxPassword.TabIndex = 0;
             this.TextBoxPassword.TabStop = false;
             this.TextBoxPassword.UseSystemPasswordChar = true;
+            this.TextBoxPassword.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxPassword_KeyPress);
             // 
             // StopWatch
             // 
