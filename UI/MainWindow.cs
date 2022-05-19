@@ -515,14 +515,14 @@ namespace UI
                 FileStream fRead = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
                 FileStream fWrite = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
 
-                // 如果文件大于10MB，采用分块加密，按10MB读写
-                if (fRead.Length > 10 * 1024 * 1024)
+                // 如果文件大于1MB，采用分块加密，按10MB读写
+                if (fRead.Length > 1 * 1024 * 1024)
                 {
-                    byte[] myByte = new byte[10 * 1024 * 1024]; // 每10MB加密一次
-                    int byteRead = 10 * 1024 * 1024; // 每次加密的流的大小
+                    byte[] myByte = new byte[1 * 1024 * 1024]; // 每1MB加密一次
+                    int byteRead = 1 * 1024 * 1024; // 每次加密的流的大小
                     long leftBytes = fRead.Length; // 剩余需要加密的流大小
                     long readBytes = 0; // 已经读取的流的大小
-                    byte[] encrypt = new byte[10 * 1024 * 1024 + 16]; // 每次加密后会增加16字节
+                    byte[] encrypt = new byte[1 * 1024 * 1024 + 16]; // 每次加密后会增加16字节
 
                     while (true)
                     {
@@ -580,14 +580,14 @@ namespace UI
                 FileStream fRead = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
                 FileStream fWrite = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
 
-                // 如果文件大于10MB，采用分块加密，按10MB读写
-                if (fRead.Length > 10 * 1024 * 1024)
+                // 如果文件大于1MB，采用分块加密，按10MB读写
+                if (fRead.Length > 1 * 1024 * 1024)
                 {
-                    byte[] myByte = new byte[10 * 1024 * 1024 + 16]; // 解密缓冲区10MB+16字节
-                    int byteRead = 10 * 1024 * 1024 + 16; // 每次解密的流的大小
+                    byte[] myByte = new byte[1 * 1024 * 1024 + 16]; // 解密缓冲区1MB+16字节
+                    int byteRead = 1 * 1024 * 1024 + 16; // 每次解密的流的大小
                     long leftBytes = fRead.Length; // 剩余需要解密的流大小
                     long readBytes = 0; // 已经读取的流的大小
-                    byte[] decrypt = new byte[10 * 1024 * 1024]; // 解密后的流大小
+                    byte[] decrypt = new byte[1 * 1024 * 1024]; // 解密后的流大小
 
                     while (true)
                     {
@@ -663,6 +663,7 @@ namespace UI
         /// <param name="isComplete">是否完成加/解密</param>
         private void SetFormControl(bool isComplete)
         {
+            // 如果加/解密操作完成，则解除按钮锁定
             if (isComplete)
             {
                 ButtonTabEncrypt.Enabled = true;
@@ -703,7 +704,11 @@ namespace UI
                 StopWatch.Stop();
         }
 
-
+        /// <summary>
+        /// 设置加/解密使用时间
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StopWatch_Tick(object sender, EventArgs e)
         {
             TimeSpan timeCount = DateTime.Now - StartDateTime;
