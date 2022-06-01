@@ -729,5 +729,25 @@ namespace UI
                 e.Handled = true;
             }
         }
+
+        private void EncryptFileList_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void EncryptFileList_DragDrop(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void DecryptFileList_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void DecryptFileList_DragDrop(object sender, DragEventArgs e)
+        {
+
+        }
     }
 }

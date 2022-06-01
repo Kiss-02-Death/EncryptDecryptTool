@@ -259,6 +259,7 @@
             // 
             // EncryptFileList
             // 
+            this.EncryptFileList.AllowDrop = true;
             this.EncryptFileList.AllowUserToAddRows = false;
             this.EncryptFileList.AllowUserToDeleteRows = false;
             this.EncryptFileList.AllowUserToResizeColumns = false;
@@ -279,6 +280,8 @@
             this.EncryptFileList.TabIndex = 0;
             this.EncryptFileList.TabStop = false;
             this.EncryptFileList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.EncryptFileList_CellContentClick);
+            this.EncryptFileList.DragDrop += new System.Windows.Forms.DragEventHandler(this.EncryptFileList_DragDrop);
+            this.EncryptFileList.DragEnter += new System.Windows.Forms.DragEventHandler(this.EncryptFileList_DragEnter);
             // 
             // EncryptFilePath
             // 
@@ -358,6 +361,8 @@
             this.DecryptFileList.TabIndex = 0;
             this.DecryptFileList.TabStop = false;
             this.DecryptFileList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DecryptFileList_CellContentClick);
+            this.DecryptFileList.DragDrop += new System.Windows.Forms.DragEventHandler(this.DecryptFileList_DragDrop);
+            this.DecryptFileList.DragEnter += new System.Windows.Forms.DragEventHandler(this.DecryptFileList_DragEnter);
             // 
             // DecryptFileName
             // 
