@@ -341,6 +341,7 @@
             // 
             // DecryptFileList
             // 
+            this.DecryptFileList.AllowDrop = true;
             this.DecryptFileList.AllowUserToAddRows = false;
             this.DecryptFileList.AllowUserToDeleteRows = false;
             this.DecryptFileList.AllowUserToResizeColumns = false;

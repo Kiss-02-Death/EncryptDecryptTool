@@ -732,22 +732,41 @@ namespace UI
 
         private void EncryptFileList_DragEnter(object sender, DragEventArgs e)
         {
-
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Link;
+            else
+                e.Effect = DragDropEffects.None; 
         }
 
         private void EncryptFileList_DragDrop(object sender, DragEventArgs e)
         {
-
+            string[] tempFileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
+            List<string> fileNames = new List<string>();
+            foreach(string fileName in tempFileNames)
+            {
+                fileNames.Add(fileName);
+            }
+            AddFile(fileNames, EncryptFileList);
         }
 
         private void DecryptFileList_DragEnter(object sender, DragEventArgs e)
         {
-
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Link;
+            else
+                e.Effect = DragDropEffects.None;
         }
 
         private void DecryptFileList_DragDrop(object sender, DragEventArgs e)
         {
-
+            string[] tempFileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
+            List<string> fileNames = new List<string>();
+            foreach (string fileName in tempFileNames)
+            {
+                if (Path.GetExtension(fileName) == ".WPFENCRYPT")
+                    fileNames.Add(fileName);
+            }
+            AddFile(fileNames, DecryptFileList);
         }
     }
 }
