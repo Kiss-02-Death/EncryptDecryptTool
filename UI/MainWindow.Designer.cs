@@ -464,6 +464,7 @@
             this.WhetherDelete.TabStop = false;
             this.WhetherDelete.Text = "操作完成后删除源文件";
             this.WhetherDelete.UseVisualStyleBackColor = true;
+            this.WhetherDelete.CheckedChanged += new System.EventHandler(this.WhetherDelete_CheckedChanged);
             // 
             // LabelPassword
             // 

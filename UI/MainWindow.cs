@@ -738,6 +738,11 @@ namespace UI
                 e.Effect = DragDropEffects.None; 
         }
 
+        /// <summary>
+        /// 拖拽文件或文件夹到加密列表里
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EncryptFileList_DragDrop(object sender, DragEventArgs e)
         {
             // 接收拖拽文件或文件夹
@@ -771,6 +776,11 @@ namespace UI
                 e.Effect = DragDropEffects.None;
         }
 
+        /// <summary>
+        /// 拖拽文件或文件夹到解密列表里
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DecryptFileList_DragDrop(object sender, DragEventArgs e)
         {
             // 接收拖拽文件或文件夹
@@ -802,6 +812,20 @@ namespace UI
                 }
             }
             AddFile(fileNames, DecryptFileList);
+        }
+
+        /// <summary>
+        /// 删除源文件警告
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WhetherDelete_CheckedChanged(object sender, EventArgs e)
+        {
+            if (WhetherDelete.Checked)
+            {
+                if (MessageBox.Show("警告！请谨慎勾选此选项！若导致文件不可逆操作概不负责！","警告",MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
+                    WhetherDelete.Checked = false;
+            }
         }
     }
 }
