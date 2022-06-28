@@ -268,7 +268,7 @@ namespace UI
                 if (fileSystemInfo is DirectoryInfo)
                 {
                     // µÝ¹éµ÷ÓÃ
-                    FindAllFile(fileSystemInfo.FullName);
+                    fileNames.AddRange(FindAllFile(fileSystemInfo.FullName));
                 }
                 else
                 {
