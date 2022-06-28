@@ -744,7 +744,20 @@ namespace UI
             List<string> fileNames = new List<string>();
             foreach(string fileName in tempFileNames)
             {
-                fileNames.Add(fileName);
+                DirectoryInfo directoryInfo = new DirectoryInfo(fileName);
+                FileSystemInfo[] fileSystemInfos = directoryInfo.GetFileSystemInfos();
+                foreach (FileSystemInfo fileSystemInfo in fileSystemInfos)
+                {
+                    // 判断是否为文件夹
+                    if (fileSystemInfo is DirectoryInfo)
+                    {
+                        fileNames.AddRange(FindAllFile(fileSystemInfo.ToString()));
+                    }
+                    else
+                    {
+                        fileNames.Add(fileSystemInfo.ToString());
+                    }
+                }
             }
             AddFile(fileNames, EncryptFileList);
         }
@@ -763,8 +776,28 @@ namespace UI
             List<string> fileNames = new List<string>();
             foreach (string fileName in tempFileNames)
             {
-                if (Path.GetExtension(fileName) == ".WPFENCRYPT")
-                    fileNames.Add(fileName);
+                DirectoryInfo directoryInfo = new DirectoryInfo(fileName);
+                FileSystemInfo[] fileSystemInfos = directoryInfo.GetFileSystemInfos();
+                foreach (FileSystemInfo fileSystemInfo in fileSystemInfos)
+                {
+                    // 判断是否为文件夹
+                    if (fileSystemInfo is DirectoryInfo)
+                    {
+                        List<string> files = new List<string>();
+                        files.AddRange(FindAllFile(fileSystemInfo.ToString()));
+                        foreach (string file in files)
+                        {
+                            if (Path.GetExtension(file) == ".WPFENCRYPT")
+                            {
+                                fileNames.Add(file);
+                            }
+                        }
+                    }
+                    else if (Path.GetExtension(fileSystemInfo.ToString()) == ".WPFENCRYPT")
+                    {
+                        fileNames.Add(fileSystemInfo.ToString());
+                    }
+                }
             }
             AddFile(fileNames, DecryptFileList);
         }
