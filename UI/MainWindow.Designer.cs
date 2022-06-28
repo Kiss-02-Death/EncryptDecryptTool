@@ -233,7 +233,7 @@
             this.LabelVersion.Name = "LabelVersion";
             this.LabelVersion.Size = new System.Drawing.Size(93, 17);
             this.LabelVersion.TabIndex = 4;
-            this.LabelVersion.Text = "当前版本：V1.0";
+            this.LabelVersion.Text = "当前版本：V3.2";
             // 
             // TabControlMainWindow
             // 
