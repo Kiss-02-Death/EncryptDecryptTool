@@ -740,6 +740,7 @@ namespace UI
 
         private void EncryptFileList_DragDrop(object sender, DragEventArgs e)
         {
+            // 接收拖拽文件或文件夹
             string[] tempFileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
             List<string> fileNames = new List<string>();
             foreach(string fileName in tempFileNames)
@@ -772,6 +773,7 @@ namespace UI
 
         private void DecryptFileList_DragDrop(object sender, DragEventArgs e)
         {
+            // 接收拖拽文件或文件夹
             string[] tempFileNames = (string[])e.Data.GetData(DataFormats.FileDrop);
             List<string> fileNames = new List<string>();
             foreach (string fileName in tempFileNames)
