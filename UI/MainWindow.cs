@@ -513,7 +513,7 @@ namespace UI
                 FileStream fRead = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
                 FileStream fWrite = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
 
-                // 如果文件大于1MB，采用分块加密，按10MB读写
+                // 如果文件大于1MB，采用分块加密，按1MB读写
                 if (fRead.Length > 1 * 1024 * 1024)
                 {
                     byte[] myByte = new byte[1 * 1024 * 1024]; // 每1MB加密一次
@@ -578,7 +578,7 @@ namespace UI
                 FileStream fRead = new FileStream(inputFile, FileMode.Open, FileAccess.Read);
                 FileStream fWrite = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
 
-                // 如果文件大于1MB，采用分块加密，按10MB读写
+                // 如果文件大于1MB，采用分块加密，按1MB读写
                 if (fRead.Length > 1 * 1024 * 1024)
                 {
                     byte[] myByte = new byte[1 * 1024 * 1024 + 16]; // 解密缓冲区1MB+16字节
