@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "UI\UI.csproj", "{1F10
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UIDelegate", "UIDelegate\UIDelegate.csproj", "{4CDAEBC5-474C-4219-B4F4-0B0135497556}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "文件加解密工具", "文件加解密工具\文件加解密工具.vdproj", "{C80DFF1F-65A9-4E69-BFD9-C1B493A5F872}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "文件加解密工具", "文件加解密工具\文件加解密工具.vdproj", "{3D78CF3C-9CF2-4505-ACCB-C21A2E1B6DFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,8 +35,8 @@ Global
 		{4CDAEBC5-474C-4219-B4F4-0B0135497556}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CDAEBC5-474C-4219-B4F4-0B0135497556}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CDAEBC5-474C-4219-B4F4-0B0135497556}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C80DFF1F-65A9-4E69-BFD9-C1B493A5F872}.Debug|Any CPU.ActiveCfg = Debug
-		{C80DFF1F-65A9-4E69-BFD9-C1B493A5F872}.Release|Any CPU.ActiveCfg = Release
+		{3D78CF3C-9CF2-4505-ACCB-C21A2E1B6DFD}.Debug|Any CPU.ActiveCfg = Debug
+		{3D78CF3C-9CF2-4505-ACCB-C21A2E1B6DFD}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

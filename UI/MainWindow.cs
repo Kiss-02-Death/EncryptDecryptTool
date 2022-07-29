@@ -751,17 +751,25 @@ namespace UI
             foreach(string fileName in tempFileNames)
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(fileName);
-                FileSystemInfo[] fileSystemInfos = directoryInfo.GetFileSystemInfos();
-                foreach (FileSystemInfo fileSystemInfo in fileSystemInfos)
+                // 判断当前路径是否为文件
+                if (File.Exists(fileName))
                 {
-                    // 判断是否为文件夹
-                    if (fileSystemInfo is DirectoryInfo)
+                    fileNames.Add(fileName);
+                }
+                else
+                {
+                    FileSystemInfo[] fileSystemInfos = directoryInfo.GetFileSystemInfos();
+                    foreach (FileSystemInfo fileSystemInfo in fileSystemInfos)
                     {
-                        fileNames.AddRange(FindAllFile(fileSystemInfo.ToString()));
-                    }
-                    else
-                    {
-                        fileNames.Add(fileSystemInfo.ToString());
+                        // 判断是否为文件夹
+                        if (fileSystemInfo is DirectoryInfo)
+                        {
+                            fileNames.AddRange(FindAllFile(fileSystemInfo.ToString()));
+                        }
+                        else
+                        {
+                            fileNames.Add(fileSystemInfo.ToString());
+                        }
                     }
                 }
             }
@@ -789,25 +797,33 @@ namespace UI
             foreach (string fileName in tempFileNames)
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(fileName);
-                FileSystemInfo[] fileSystemInfos = directoryInfo.GetFileSystemInfos();
-                foreach (FileSystemInfo fileSystemInfo in fileSystemInfos)
+                // 判断当前路径是否为文件
+                if (File.Exists(fileName) && Path.GetExtension(fileName) == ".WPFENCRYPT")
                 {
-                    // 判断是否为文件夹
-                    if (fileSystemInfo is DirectoryInfo)
+                    fileNames.Add(fileName);
+                }
+                else
+                {
+                    FileSystemInfo[] fileSystemInfos = directoryInfo.GetFileSystemInfos();
+                    foreach (FileSystemInfo fileSystemInfo in fileSystemInfos)
                     {
-                        List<string> files = new List<string>();
-                        files.AddRange(FindAllFile(fileSystemInfo.ToString()));
-                        foreach (string file in files)
+                        // 判断是否为文件夹
+                        if (fileSystemInfo is DirectoryInfo)
                         {
-                            if (Path.GetExtension(file) == ".WPFENCRYPT")
+                            List<string> files = new List<string>();
+                            files.AddRange(FindAllFile(fileSystemInfo.ToString()));
+                            foreach (string file in files)
                             {
-                                fileNames.Add(file);
+                                if (Path.GetExtension(file) == ".WPFENCRYPT")
+                                {
+                                    fileNames.Add(file);
+                                }
                             }
                         }
-                    }
-                    else if (Path.GetExtension(fileSystemInfo.ToString()) == ".WPFENCRYPT")
-                    {
-                        fileNames.Add(fileSystemInfo.ToString());
+                        else if (Path.GetExtension(fileSystemInfo.ToString()) == ".WPFENCRYPT")
+                        {
+                            fileNames.Add(fileSystemInfo.ToString());
+                        }
                     }
                 }
             }
